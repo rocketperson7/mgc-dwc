@@ -1,0 +1,7 @@
+(sym_lib_table
+  (lib (name "LED")(type "Legacy")(uri "${KIPRJMOD}/lib/KiCAD/APHF1608/APHF1608LSEEQBDZGKC.lib")(options "")(descr ""))
+  (lib (name "HapticDriver")(type "Legacy")(uri "${KIPRJMOD}/lib/KiCAD/DRV2605/2023-03-19_22-26-36.lib")(options "")(descr ""))
+  (lib (name "LEDDriver")(type "Legacy")(uri "${KIPRJMOD}/lib/KiCAD/IS31FL3193/2023-03-19_22-46-55.lib")(options "")(descr ""))
+  (lib (name "I2CMultiplexor")(type "Legacy")(uri "${KIPRJMOD}/lib/KiCAD/TCA9544/2023-03-19_23-34-24.lib")(options "")(descr ""))
+  (lib (name "TOF")(type "Legacy")(uri "${KIPRJMOD}/lib/KiCAD/VL53L1/2023-03-19_22-22-45.lib")(options "")(descr ""))
+)
