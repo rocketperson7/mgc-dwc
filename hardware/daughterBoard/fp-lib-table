@@ -1,0 +1,7 @@
+(fp_lib_table
+  (lib (name "LED")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/APHF1608")(options "")(descr ""))
+  (lib (name "MotorDriver")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/DRV2605/footprints.pretty")(options "")(descr ""))
+  (lib (name "LEDDriver")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/IS31FL3193/footprints.pretty")(options "")(descr ""))
+  (lib (name "I2CMultiplexor")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/TCA9544/footprints.pretty")(options "")(descr ""))
+  (lib (name "TOF")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/VL53L1/footprints.pretty")(options "")(descr ""))
+)
