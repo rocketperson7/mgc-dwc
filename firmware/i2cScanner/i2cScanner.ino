@@ -27,7 +27,7 @@ void setup()
     while (!Serial);
     delay(1000);
 
-    Wire.begin();
+    Wire.begin(5,4);
     
     Serial.begin(115200);
     Serial.println("\nPCAScanner ready!");
