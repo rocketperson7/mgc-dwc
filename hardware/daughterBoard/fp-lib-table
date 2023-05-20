@@ -4,4 +4,5 @@
   (lib (name "LEDDriver")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/IS31FL3193/footprints.pretty")(options "")(descr ""))
   (lib (name "I2CMultiplexor")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/TCA9544/footprints.pretty")(options "")(descr ""))
   (lib (name "TOF")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/VL53L1/footprints.pretty")(options "")(descr ""))
+  (lib (name "LED_New")(type "KiCad")(uri "${KIPRJMOD}/lib/KiCAD/Wurth_LED/footprints.pretty")(options "")(descr ""))
 )
