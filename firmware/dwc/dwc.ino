@@ -6,13 +6,18 @@ Adafruit_DRV2605 drv;
 
 Adafruit_VL53L1X vl53; // Create an instance of the VL53L1CXV0FY1 sensor object
 
+uint8_t mux_num = 6;
+
+
 void i2c_select(uint8_t mux, uint8_t port) {
   if (port > 3) return;
  
-  Wire.beginTransmission(0x73 - mux); //gross, but disable the other mux
-  Wire.write(0);
-  Wire.endTransmission();
-
+  for (uint8_t m=0; m<7; m++) {
+    // if(m==mux) continue; //don't need to disable the current mux 
+    Wire.beginTransmission(0x70 + m); //disable the other muxes
+    Wire.write(0);
+    Wire.endTransmission();
+  }
 
   Wire.beginTransmission(0x70 + mux);
   Wire.write(4 + port);
@@ -66,14 +71,16 @@ void setup() {
     Wire.begin(5,4);
 
 
-
+  for (uint8_t m=0; m<8; m++) {
     for (uint8_t t=0; t<4; t++) {
-      i2c_select(0, t);
-      Serial.print("PCA 0 Port #"); Serial.println(t);
+      i2c_select(m, t);
+      Serial.print("mux at addr 0x7");
+      Serial.print(m);
+      Serial.print(" Port #"); Serial.println(t);
 
       for (uint8_t addr = 0; addr<=127; addr++) {
-        if (addr == 0x70) continue;
-        if (addr == 0x73) continue;
+        if (addr >= 0x70 && addr <= 0x78) continue;
+        // if (addr == 0x73) continue;
 
         Wire.beginTransmission(addr);
         if (Wire.endTransmission() == 0) {
@@ -81,24 +88,28 @@ void setup() {
         }
       }
     }
+  }
+    // for (uint8_t t=0; t<4; t++) {
+    //   i2c_select(3, t);
+    //   Serial.print("PCA 3 Port #"); Serial.println(t);
 
-    for (uint8_t t=0; t<4; t++) {
-      i2c_select(3, t);
-      Serial.print("PCA 3 Port #"); Serial.println(t);
+    //   for (uint8_t addr = 0; addr<=127; addr++) {
+    //     // if (addr == 0x70) continue;
+    //     // if (addr == 0x73) continue;
 
-      for (uint8_t addr = 0; addr<=127; addr++) {
-        if (addr == 0x70) continue;
-        if (addr == 0x73) continue;
+    //     Wire.beginTransmission(addr);
+    //     if (Wire.endTransmission() == 0) {
+    //       Serial.print("Found I2C 0x");  Serial.println(addr,HEX);
+    //     }
+    //   }
+    // }
 
-        Wire.beginTransmission(addr);
-        if (Wire.endTransmission() == 0) {
-          Serial.print("Found I2C 0x");  Serial.println(addr,HEX);
-        }
-      }
-    }
+  while(1){
+    delay(10000);
+  };
 
     // motor driver section:
-    i2c_select(3, 0); //motor driver
+    i2c_select(mux_num, 0); //motor driver
 
     Serial.println("Adafruit DRV2605 Basic test");
     if (! drv.begin()) {
@@ -124,7 +135,7 @@ void setup() {
     drv.setMode(DRV2605_MODE_REALTIME);
 
     //lidar sensor section:
-    i2c_select(3, 1); 
+    i2c_select(mux_num, 1); 
     Serial.println(F("Adafruit VL53L1X sensor demo"));
 
     if (! vl53.begin(0x29, &Wire)) {
@@ -255,7 +266,7 @@ void loop() {
     vl53.clearInterrupt();
 
 
-    i2c_select(3, 0); //motor driver
+    i2c_select(mux_num, 0); //motor driver
     // motor_out = map(distance, 0, 1000, 127,0);
 
     
@@ -284,7 +295,7 @@ void loop() {
 
 
 
-    i2c_select(3, 1); //lidar
+    i2c_select(mux_num, 1); //lidar
 
   }
 }
