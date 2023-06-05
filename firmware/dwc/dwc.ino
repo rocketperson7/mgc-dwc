@@ -89,24 +89,9 @@ void setup() {
       }
     }
   }
-    // for (uint8_t t=0; t<4; t++) {
-    //   i2c_select(3, t);
-    //   Serial.print("PCA 3 Port #"); Serial.println(t);
 
-    //   for (uint8_t addr = 0; addr<=127; addr++) {
-    //     // if (addr == 0x70) continue;
-    //     // if (addr == 0x73) continue;
 
-    //     Wire.beginTransmission(addr);
-    //     if (Wire.endTransmission() == 0) {
-    //       Serial.print("Found I2C 0x");  Serial.println(addr,HEX);
-    //     }
-    //   }
-    // }
-
-  while(1){
-    delay(10000);
-  };
+  // while(1) delay(10000); // infinite loop without crashing
 
     // motor driver section:
     i2c_select(mux_num, 0); //motor driver
@@ -167,36 +152,9 @@ void setup() {
 
 
     //led driver section
-    // i2c_select(3, 2); 
+    // i2c_select(mux_num, 2); 
     // IS31FL3193_Breath_mode();
-    // Wire.beginTransmission(0x68);
-    // Wire.write(0); //set led driver register address
-    // Wire.write(0); //disable software shutdown?
-    // Wire.endTransmission();
 
-    // Wire.beginTransmission(0x68);
-    // Wire.write(0x1D); //set led driver register address
-    // Wire.write(0x03); 
-    // Wire.endTransmission();
-
-
-
-
-    // Wire.write(0); //breathign control
-    // Wire.write(1<<5); //led mode
-    // Wire.write(0); //current setting
-
-    // Wire.write(255); //red channel?
-    // Wire.write(200); //green channel?
-    // Wire.write(155); //blue channel?
-
-    // Wire.write(0); //latch values to output
-
-    // Wire.write(1<<5); // enable all channels?
-
-    // if(Wire.endTransmission()){
-    //   Serial.println("fail");
-    // }
 
 
 
