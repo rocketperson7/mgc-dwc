@@ -6,8 +6,6 @@ Adafruit_DRV2605 drv;
 
 Adafruit_VL53L1X vl53; // Create an instance of the VL53L1CXV0FY1 sensor object
 
-uint8_t mux_num = 6;
-
 
 void i2c_select(uint8_t mux, uint8_t port) {
   if (port > 3) return;
@@ -68,7 +66,8 @@ void setup() {
     Serial.println("\ndwc setup");
     
     
-    Wire.begin(5,4);
+    // Wire.begin(5,4);
+    Wire.begin(4,5);
 
 
   for (uint8_t m=0; m<8; m++) {
@@ -76,11 +75,11 @@ void setup() {
       i2c_select(m, t);
       Serial.print("mux at addr 0x7");
       Serial.print(m);
-      Serial.print(" Port #"); Serial.println(t);
+      Serial.print(" Port #"); 
+      Serial.println(t);
 
       for (uint8_t addr = 0; addr<=127; addr++) {
         if (addr >= 0x70 && addr <= 0x78) continue;
-        // if (addr == 0x73) continue;
 
         Wire.beginTransmission(addr);
         if (Wire.endTransmission() == 0) {
@@ -91,69 +90,110 @@ void setup() {
   }
 
 
+
+          // motor driver section:
+    for (uint8_t m=0; m<8; m++) {
+      if (m != 2 and m !=5) continue;
+
+      i2c_select(m, 0); //motor driver
+
+      Serial.println("Adafruit DRV2605 Basic test");
+      if (! drv.begin()) {
+        Serial.print("Could not find DRV2605 on mux ");
+        Serial.print(m);
+        Serial.println(" port 0");
+        // while (1) delay(10);
+      }
+
+      // drv.selectLibrary(6);
+      // drv.useLRA();
+
+      drv.useERM();
+      // drv.writeRegister8(DRV2605_REG_CONTROL3, drv.readRegister8(DRV2605_REG_CONTROL3) | 0x00);
+
+      Serial.println("control3 reg");
+      Serial.print(drv.readRegister8(DRV2605_REG_CONTROL3),HEX);
+
+      // // I2C trigger by sending 'go' command 
+      // // default, internal trigger when sending GO command
+      // drv.setMode(DRV2605_MODE_INTTRIG); 
+      drv.setMode(DRV2605_MODE_REALTIME);
+
+      drv.setRealtimeValue(50);
+
+
+    //   i2c_select(mux_num, 3); //motor driver
+
+    //   Serial.println("Adafruit DRV2605 Basic test");
+    //   if (! drv.begin()) {
+    //     Serial.print("Could not find DRV2605 on mux ");
+    //     Serial.print(m);
+    //     Serial.println(" port 3");
+    //     // while (1) delay(10);
+    //   }
+
+    //   // drv.selectLibrary(6);
+    //   // drv.useLRA();
+
+    //   drv.useERM();
+    //   // drv.writeRegister8(DRV2605_REG_CONTROL3, drv.readRegister8(DRV2605_REG_CONTROL3) | 0x00);
+
+    //   Serial.println("control3 reg");
+    //   Serial.println(drv.readRegister8(DRV2605_REG_CONTROL3),HEX);
+
+    //   // // I2C trigger by sending 'go' command 
+    //   // // default, internal trigger when sending GO command
+    //   // drv.setMode(DRV2605_MODE_INTTRIG); 
+    //   drv.setMode(DRV2605_MODE_REALTIME);
+
+    }
+
   // while(1) delay(10000); // infinite loop without crashing
 
-    // motor driver section:
-    i2c_select(mux_num, 0); //motor driver
 
-    Serial.println("Adafruit DRV2605 Basic test");
-    if (! drv.begin()) {
-      Serial.println("Could not find DRV2605");
-      while (1) delay(10);
-    }
-
-    // drv.selectLibrary(6);
-
-    // drv.useLRA();
-
-    drv.useERM();
-
-
-    // drv.writeRegister8(DRV2605_REG_CONTROL3, drv.readRegister8(DRV2605_REG_CONTROL3) | 0x00);
-
-    Serial.println("control3 reg");
-    Serial.print(drv.readRegister8(DRV2605_REG_CONTROL3),HEX);
-
-    // // I2C trigger by sending 'go' command 
-    // // default, internal trigger when sending GO command
-    // drv.setMode(DRV2605_MODE_INTTRIG); 
-    drv.setMode(DRV2605_MODE_REALTIME);
 
     //lidar sensor section:
-    i2c_select(mux_num, 1); 
-    Serial.println(F("Adafruit VL53L1X sensor demo"));
+    for (uint8_t m=0; m<8; m++) {
+      if (m != 2 and m != 5) continue;
 
-    if (! vl53.begin(0x29, &Wire)) {
-      Serial.print(F("Error on init of VL sensor: "));
-      Serial.println(vl53.vl_status);
-      while (1)       delay(10);
+
+      i2c_select(m, 1); 
+      Serial.println(F("Adafruit VL53L1X sensor demo"));
+
+      if (! vl53.begin(0x29, &Wire)) {
+        Serial.print(F("Error on init of VL sensor: "));
+        Serial.println(vl53.vl_status);
+        continue;
+      }
+      Serial.println(F("VL53L1X sensor OK!"));
+
+      Serial.print(F("Sensor ID: 0x"));
+      Serial.println(vl53.sensorID(), HEX);
+
+      if (! vl53.startRanging()) {
+        Serial.print(F("Couldn't start ranging: "));
+        Serial.println(vl53.vl_status);
+        continue;
+      }
+      Serial.println(F("Ranging started"));
+
+      // Valid timing budgets: 15, 20, 33, 50, 100, 200 and 500ms!
+      vl53.setTimingBudget(50);
+      Serial.print(F("Timing budget (ms): "));
+      Serial.println(vl53.getTimingBudget());
+
+      /*
+      vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
+      vl.VL53L1X_SetInterruptPolarity(0);
+      */
+
     }
-    Serial.println(F("VL53L1X sensor OK!"));
-
-    Serial.print(F("Sensor ID: 0x"));
-    Serial.println(vl53.sensorID(), HEX);
-
-    if (! vl53.startRanging()) {
-      Serial.print(F("Couldn't start ranging: "));
-      Serial.println(vl53.vl_status);
-      while (1)       delay(10);
-    }
-    Serial.println(F("Ranging started"));
-
-    // Valid timing budgets: 15, 20, 33, 50, 100, 200 and 500ms!
-    vl53.setTimingBudget(50);
-    Serial.print(F("Timing budget (ms): "));
-    Serial.println(vl53.getTimingBudget());
-
-    /*
-    vl.VL53L1X_SetDistanceThreshold(100, 300, 3, 1);
-    vl.VL53L1X_SetInterruptPolarity(0);
-    */
-
 
     //led driver section
-    // i2c_select(mux_num, 2); 
-    // IS31FL3193_Breath_mode();
+    // for (uint8_t m=0; m<8; m++) {
+    //   i2c_select(m, 2); 
+    //   // IS31FL3193_Breath_mode();
+    // }
 
 
 
@@ -201,59 +241,50 @@ void loop() {
 
  
 
-    int16_t distance;
+  int16_t distance;
 
-  if (vl53.dataReady()) {
-    // new measurement for the taking!
-    distance = vl53.distance();
-    if (distance == -1) {
-      // something went wrong!
-      // Serial.print(F("Couldn't get distance: "));
-      // Serial.println(vl53.vl_status);
-      i2c_select(3, 0); //motor driver
-      drv.setRealtimeValue(0);
-      i2c_select(3, 1); //lidar
+  for (uint8_t m=0; m<8; m++) {
+      if (m != 2 and m != 5) continue;
+      i2c_select(m, 1);
+      if (vl53.dataReady()) {
+        // new measurement for the taking!
+        distance = vl53.distance();
+        if (distance == -1) {
+          // something went wrong!
+          // Serial.print(F("Couldn't get distance: "));
+          // Serial.println(vl53.vl_status);
+          i2c_select(m, 0); //motor driver
+          drv.setRealtimeValue(0);
+          i2c_select(m, 1); //lidar
+          continue;
+        }
+      Serial.print("lidar number ");
+      Serial.print(m);
+      Serial.print(F(" distance: "));
+      Serial.print(distance);
+      Serial.println(" mm");
 
-      return;
-    }
-    Serial.print(F("Distance: "));
-    Serial.print(distance);
-    Serial.println(" mm");
-
-    // data is read out, time for another reading!
-    vl53.clearInterrupt();
+      // data is read out, time for another reading!
+      vl53.clearInterrupt();
 
 
-    i2c_select(mux_num, 0); //motor driver
-    // motor_out = map(distance, 0, 1000, 127,0);
+      i2c_select(m, 0); //motor driver
+      // motor_out = map(distance, 0, 1000, 127,0);
 
     
-    motor_out = 127 - 64* log(distance / 20);
+      motor_out = 127 - 64* log(distance / 20);
 
 
 
-    // if (distance > 0 and distance < 20){
-    //   motor_out = 127;
-    // } else if (distance >= 20 and distance < 200){
-    //   motor_out = 96;
-    // } else if (distance >= 200 and distance < 300){
-    //   motor_out = 64;
-    // } else if (distance >= 300 and distance < 400){
-    //   motor_out = 32;
-    // } else if (distance >= 400 and distance < 500){
-    //   motor_out = 16;
-    // } else if (distance >= 500){
-    //   motor_out = 8;
-    // }
+      Serial.print("motor power:");
+      Serial.println(motor_out);
+      drv.setRealtimeValue(motor_out);
 
-    Serial.print("motor power:");
-    Serial.println(motor_out);
-    drv.setRealtimeValue(motor_out);
+      delay(50);
 
 
+      // i2c_select(m, 1); //lidar
 
-
-    i2c_select(mux_num, 1); //lidar
-
+    }
   }
 }
