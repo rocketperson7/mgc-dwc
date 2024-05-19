@@ -10,7 +10,7 @@
 
 #include "Wire.h"
 
-#define PCAADDR 0x73
+#define PCAADDR 0x70
 
 void pcaselect(uint8_t i) {
   if (i > 3) return;
@@ -31,7 +31,7 @@ void setup()
     Serial.println("\nPCAScanner ready!");
     
     
-    Wire.begin(5,4);
+    Wire.begin(4,5);
     
 
     for (uint8_t t=0; t<4; t++) {
