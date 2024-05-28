@@ -239,11 +239,11 @@ void loop() {
 
           continue;
         }
-        // Serial.print("lidar number ");
-        // Serial.print(3*mux + port);
-        // Serial.print(F(" distance: "));
-        // Serial.print(distance);
-        // Serial.println(" mm");
+        Serial.print("lidar number ");
+        Serial.print(3*mux + port);
+        Serial.print(F(" distance: "));
+        Serial.print(distance);
+        Serial.println(" mm");
 
         // data is read out, time for another reading!
         vl53.clearInterrupt();
@@ -260,10 +260,10 @@ void loop() {
 
         switch (motor_mode) {
           case MOTOR_LIN:
-            motor_out = 0.5*motor_out_lin + 0.5*motor_out_log;
+            motor_out = motor_out_lin;
             break;
           case MOTOR_LOG:
-            motor_out = 0.5*motor_out_lin + 0.5*motor_out_log;
+            motor_out = motor_out_log;
             break;
           case MOTOR_MIX:
             motor_out = 0.5*motor_out_lin + 0.5*motor_out_log;
@@ -277,12 +277,12 @@ void loop() {
 
 
 
-        // Serial.print("motor power lin: ");
-        // Serial.print(motor_out_lin);
-        // Serial.print(", motor power log: ");
-        // Serial.print(motor_out_log);
-        // Serial.print(", motor out: ");
-        // Serial.println(motor_out);
+        Serial.print("motor power lin: ");
+        Serial.print(motor_out_lin);
+        Serial.print(", motor power log: ");
+        Serial.print(motor_out_log);
+        Serial.print(", motor out: ");
+        Serial.println(motor_out);
         drv.setRealtimeValue(motor_out);
 
         // delay(50); //delay between each sensor update
