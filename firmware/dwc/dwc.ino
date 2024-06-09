@@ -232,7 +232,9 @@ void loop() {
         distance = vl53.distance();
         if (distance == -1) {
           // something went wrong!
-          Serial.print(F("Couldn't get distance: "));
+          Serial.print(F("Couldn't get distance on mux: "));
+          Serial.print(3*mux + port);
+          Serial.print(" status: ");
           Serial.println(vl53.vl_status);
 
           drv.setRealtimeValue(0);
@@ -286,6 +288,10 @@ void loop() {
         drv.setRealtimeValue(motor_out);
 
         // delay(50); //delay between each sensor update
+      } 
+      else {
+        Serial.print("lidar not ready: ");
+        Serial.println(3*mux + port);
       }
     }
   }

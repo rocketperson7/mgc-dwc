@@ -10,15 +10,30 @@
 
 #include "Wire.h"
 
-#define PCAADDR 0x70
 
-void pcaselect(uint8_t i) {
-  if (i > 3) return;
- 
-  Wire.beginTransmission(PCAADDR);
-  Wire.write(4 + i);
-  Wire.endTransmission();  
+void i2c_select(uint8_t mux, uint8_t port) {
+  if (port > 3) return;
+
+  // Serial.print("I2C SELECT: ");
+  // Serial.print("mux: ");
+  // Serial.print(mux);
+  // Serial.print(" port: ");
+  // Serial.println(port);
+
+
+  Wire.beginTransmission(0x71 - mux); //disable the other mux
+  Wire.write(0);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(0x70 + mux);
+  Wire.write(4 + port);
+  Wire.endTransmission();
+  
+
+
+
 }
+
 
 
 
@@ -34,16 +49,21 @@ void setup()
     Wire.begin(4,5);
     
 
-    for (uint8_t t=0; t<4; t++) {
-      pcaselect(t);
-      Serial.print("PCA Port #"); Serial.println(t);
+    for (uint8_t m=0; m<8; m++) {
+      for (uint8_t t=0; t<4; t++) {
+        i2c_select(m, t);
+        Serial.print("mux at addr 0x7");
+        Serial.print(m);
+        Serial.print(" Port #"); 
+        Serial.println(t);
 
-      for (uint8_t addr = 0; addr<=127; addr++) {
-        // if (addr == PCAADDR) continue;
+        for (uint8_t addr = 0; addr<=127; addr++) {
+          if (addr >= 0x70 && addr <= 0x78) continue;
 
-        Wire.beginTransmission(addr);
-        if (Wire.endTransmission() == 0) {
-          Serial.print("Found I2C 0x");  Serial.println(addr,HEX);
+          Wire.beginTransmission(addr);
+          if (Wire.endTransmission() == 0) {
+            Serial.print("Found I2C 0x");  Serial.println(addr,HEX);
+          }
         }
       }
     }
